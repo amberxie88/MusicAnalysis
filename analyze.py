@@ -204,65 +204,72 @@ def get_word_frequency(songs_df, artist_name, album, word):
 
     graph_df = pd.DataFrame(columns=('Tracks', 'Word Frequency'))
     word = word.upper() #for consistency
-    print(word)
+    #print(word)
+    #print(list(songs_df.columns))
     
     #copied below
     i=0
     for name, alb in songs_group:
-        print("printing alb")
-        print(name)
-        print(name == album)
+        #print("printing alb")
+        #print(name)
+        #print(name == album)
         #print(alb)
-        if (name != album):
+        #We run this separately for all albums, so if it's not the album we want, skip.
+        if (name != album): 
             continue
-        # Create a list of words for every word that is in an album
+        
+        # total is the total number of times the word shows up throughout the entire ALBUM
         total = 0
+        #print("NAME:")
+        #print(name)
+        #print("ALB:")
+        #print(alb)
+        #print(list(alb.columns))
+        #print(len(alb))
+        #print(alb['Lyrics'])
 
-        for lyric in alb['Lyrics'].iteritems():
-            if isinstance(lyric[1], str):
-                words = lyric[1].replace('\n', ' ')
+        for i in range(len(alb)):
+            total = 0
+            row = alb.iloc[i]
+            lyric = row['Lyrics']
+            title = row['Title']
+            #print(title)
+            #lyric = alb['Lyrics']
+            if isinstance(lyric, str):
+                words = lyric.replace('\n', ' ') #lyric[1] is a long string of all the lyrics
+                words = words.replace("-", " ") #separate possible stutters, i.e. "s-solo"
+                words = words.replace(',', '') #Remove commas (which could decrease word matching)
+                
                 words = words.split(' ')
-                #print(len(words))
-                if (words[0] == "He"):
-                    print(words)
+
                 for i in range(len(words)):
                     w = words[i]
                     w = w.upper()
                     if (w == word):
-                        #print(len(words))
-                        #print(words[29])
-                        #print(words[363].upper() == word)
-                        #print(i)
                         total+=1
-                print(total)
-
-                filtered_words = [1 for w in words if w.upper() == word]  # remove the stopwords
-
-                #total+= sum(filtered_words)
-        print("Out here")
-        # Find how many words and unique words are in the album
-        print(total)
-        a = len(set(every_word_in_album))
-        b = len(every_word_in_album)
-
+                graph_df.loc[i] = (title, total)
         # Calculate the lexical richness of the album, which is the amount of unique words relative to
         # the total amount of words in the album
-        graph_df.loc[i] = (name, (a / float(b)) * 100)
+        graph_df.loc[i] = (title, total)
         i += 1
+
+    #print(graph_df)
 
     # Plot the lexical richness by album on a bar chart
     graph_df = graph_df.set_index('Tracks')
-    graph_df = graph_df.reindex(albums)
+
+    #TODO: reorder tracks based on their order in the album.
+    #graph_df = graph_df.reindex(albums) #somehow find a list of strings that represent track order
     graph_df.plot(kind='bar',
                   use_index = True,
-                  y='Lexical Richness',
-                  title='Lexical richness of each {} Album'.format(artist_name),
+                  y='Word Frequency',
+                  title='Word frequency of {} in {}'.format(word.lower(), album),
                   legend=None)
 
     plt.xlabel("Albums")
     plt.xticks(rotation=85)
     plt.tight_layout()
-    plt.savefig('{} Lexical Richness.png'.format(artist_name))
+    plt.savefig('{}-{}-{}.png'.format(artist_name, album, word.lower()))
 
     # Show the bar chart
     plt.show()

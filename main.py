@@ -24,8 +24,10 @@ def main(artist_name, album_list):
         songs_df.to_csv('{}.csv'.format(artist_name))
 
     print("Finished CSV stuff")
-    get_lexical_richness(songs_df, artist_name, album_list)
+    #get_lexical_richness(songs_df, artist_name, album_list)
     print("finished lexical richness")
+
+    return songs_df #delete later
     get_sentiment_analysis(songs_df, artist_name, album_list)
     print("finished sentiment analysis")
 
