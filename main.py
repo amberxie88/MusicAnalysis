@@ -44,8 +44,9 @@ def main(artist_name, album_list):
     #get_topic_analysis(songs_df, topic_labels, topics_matrix, artist_name, album_list)
     return songs_df
 
-def word_frequency(songs_df, artist_name, album_list, word_list):
+def word_frequency(songs_df, artist_name, album_list, word_list, extra_words = []):
     for album in album_list:
         for word in word_list:
-            get_word_frequency(songs_df, artist_name, album, word)
+            get_word_frequency(songs_df, artist_name, album, word, extra_words)
     print("finished word frequency")
+

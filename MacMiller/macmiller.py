@@ -1,4 +1,6 @@
-from main import main
+import sys
+sys.path.insert(0, '../')
+from main import *
 
 MAC_ALBUMS = ['The Jukebox: Prelude to Class Clown',
               'The High Life',
@@ -15,5 +17,7 @@ MAC_ALBUMS = ['The Jukebox: Prelude to Class Clown',
 
 NAME = 'Mac Miller'
 
-main(NAME, MAC_ALBUMS)
+songs_df = main(NAME, MAC_ALBUMS)
+
+word_frequency(songs_df, NAME, ['Swimming'], ['swim'], extra_words=['swimmin\'', 'swimming'])
 

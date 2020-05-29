@@ -197,44 +197,31 @@ def get_topic_analysis(songs_df, topic_labels, topics_matrix, artist_name, album
     # Show the line chart
     plt.show()
 
-def get_word_frequency(songs_df, artist_name, album, word):
-    """Plots the number of appearances of a word in each track of an album according to the lyrics in the given DataFrame"""
+def get_word_frequency(songs_df, artist_name, album, word, extra_words=[]):
+    """Plots the number of appearances of a word in each track of an album according to the lyrics in the given DataFrame
+    Multiple represents if you are looking for multiple words, not just one.
+    """
 
     songs_group = songs_df.groupby('Album')
 
     graph_df = pd.DataFrame(columns=('Tracks', 'Word Frequency'))
     word = word.upper() #for consistency
-    #print(word)
-    #print(list(songs_df.columns))
     
     #copied below
     i=0
     for name, alb in songs_group:
-        #print("printing alb")
-        #print(name)
-        #print(name == album)
-        #print(alb)
         #We run this separately for all albums, so if it's not the album we want, skip.
         if (name != album): 
             continue
         
         # total is the total number of times the word shows up throughout the entire ALBUM
         total = 0
-        #print("NAME:")
-        #print(name)
-        #print("ALB:")
-        #print(alb)
-        #print(list(alb.columns))
-        #print(len(alb))
-        #print(alb['Lyrics'])
 
         for i in range(len(alb)):
             total = 0
             row = alb.iloc[i]
             lyric = row['Lyrics']
             title = row['Title']
-            #print(title)
-            #lyric = alb['Lyrics']
             if isinstance(lyric, str):
                 words = lyric.replace('\n', ' ') #lyric[1] is a long string of all the lyrics
                 words = words.replace("-", " ") #separate possible stutters, i.e. "s-solo"
@@ -247,6 +234,9 @@ def get_word_frequency(songs_df, artist_name, album, word):
                     w = w.upper()
                     if (w == word):
                         total+=1
+                    for extra_w in extra_words:
+                        if (extra_w.upper() == w):
+                            total +=1
                 graph_df.loc[i] = (title, total)
         # Calculate the lexical richness of the album, which is the amount of unique words relative to
         # the total amount of words in the album
